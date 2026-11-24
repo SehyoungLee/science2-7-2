@@ -1,0 +1,2110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>중2 과학 가상실험 - 정전기 유도</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-light: #eff6ff;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --warning: #d97706;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #cbd5e1;
+    }
+    * { box-sizing: border-box; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Malgun Gothic', sans-serif; }
+    body { margin: 0; background: var(--bg); color: var(--text); line-height: 1.6; }
+
+    header {
+      background: linear-gradient(135deg, #1e3a8a, #2563eb);
+      color: #fff;
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    }
+    header h1 { margin: 0; font-size: 1.2rem; }
+    header .sub { font-size: 0.82rem; opacity: 0.9; }
+    .header-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .student-badge {
+      background: rgba(255,255,255,0.2);
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 0.84rem;
+      font-weight: 700;
+    }
+    .admin-badge {
+      background: #f59e0b;
+      color: #0f172a;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      display: none;
+    }
+    .btn-header {
+      background: rgba(15,23,42,0.45);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.35);
+      padding: 6px 11px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .btn-header:hover { background: rgba(15,23,42,0.75); }
+
+    /* 첫 화면 전용 로그인 컨테이너 */
+    .login-screen {
+      max-width: 440px;
+      margin: 48px auto;
+      padding: 0 16px;
+    }
+    .login-card {
+      background: #fff;
+      border-radius: 18px;
+      padding: 32px 28px;
+      box-shadow: 0 10px 28px rgba(15,23,42,0.1);
+      border: 1px solid #e2e8f0;
+    }
+    .login-card h2 {
+      margin: 0 0 8px;
+      font-size: 1.4rem;
+      color: #1e3a8a;
+      border: none;
+      padding: 0;
+      text-align: center;
+    }
+    .login-card p {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 22px;
+    }
+
+    .container { max-width: 980px; margin: 20px auto; padding: 0 16px 48px; display: none; }
+
+    /* 진행 탭 */
+    .stepper {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .step-btn {
+      background: #e2e8f0;
+      border: 2px solid transparent;
+      border-radius: 10px;
+      padding: 10px 6px;
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .step-btn.unlocked { background: #fff; border-color: #cbd5e1; color: var(--text); }
+    .step-btn.active { background: var(--primary); color: #fff; border-color: var(--primary-dark); }
+    .step-btn.done { border-color: var(--success); }
+    .step-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 16px rgba(15,23,42,0.06);
+      margin-bottom: 20px;
+      display: none;
+    }
+    .card.active { display: block; animation: fadeIn 0.25s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    h2 { margin-top: 0; font-size: 1.3rem; color: #0f172a; border-bottom: 2px solid var(--primary-light); padding-bottom: 10px; }
+    .objective-box {
+      background: var(--primary-light);
+      border-left: 4px solid var(--primary);
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 18px;
+      font-size: 0.92rem;
+    }
+
+    .btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 11px 20px;
+      border-radius: 10px;
+      font-size: 0.94rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn:hover { background: var(--primary-dark); }
+    .btn:disabled { background: #94a3b8; cursor: not-allowed; }
+    .btn-outline {
+      background: #fff;
+      color: var(--primary);
+      border: 2px solid var(--primary);
+    }
+    .btn-outline:hover { background: var(--primary-light); }
+    .btn-success { background: var(--success); }
+    .btn-success:hover { background: #15803d; }
+
+    /* 동기유발 유튜브 & 단계별 질문 레이아웃 */
+    .motivation-layout {
+      display: grid;
+      grid-template-columns: 290px 1fr;
+      gap: 20px;
+      align-items: start;
+      margin-top: 14px;
+    }
+    @media (max-width: 760px) { .motivation-layout { grid-template-columns: 1fr; } }
+    .video-box {
+      background: #0f172a;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+      text-align: center;
+    }
+    .video-box iframe {
+      width: 100%;
+      height: 440px;
+      border: none;
+      display: block;
+    }
+    .video-fallback-link {
+      display: block;
+      padding: 10px;
+      background: #dc2626;
+      color: #ffffff;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .video-fallback-link:hover { background: #b91c1c; }
+
+    .mot-step-card {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+    .mot-step-card h3 {
+      margin: 0 0 10px;
+      font-size: 1.02rem;
+      color: #1e3a8a;
+    }
+    .hint-box {
+      background: #fefce8;
+      border: 1px solid #fde047;
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-size: 0.87rem;
+      color: #854d0e;
+      margin: 10px 0;
+    }
+    .thought-textarea {
+      width: 100%;
+      min-height: 76px;
+      padding: 10px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.94rem;
+      resize: vertical;
+      margin-top: 6px;
+    }
+    .thought-textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    /* 개념탐구 카드 & 가독성 정리 박스 */
+    .concept-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 16px 0; }
+    @media (max-width: 860px) { .concept-grid-3 { grid-template-columns: 1fr; } .stepper { grid-template-columns: repeat(2, 1fr); } }
+    .concept-box {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      background: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .concept-box h3 { margin: 0 0 8px; font-size: 1rem; color: var(--primary-dark); text-align: center; }
+    .diagram-wrap {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 6px;
+      margin-bottom: 10px;
+    }
+    .summary-bullets {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 0.85rem;
+      line-height: 1.65;
+    }
+    .summary-bullets .row { margin-bottom: 6px; }
+    .summary-bullets .row:last-child { margin-bottom: 0; }
+    .tag-plus { color: #dc2626; font-weight: 800; }
+    .tag-minus { color: #1d4ed8; font-weight: 800; }
+
+    .generalize-box {
+      background: linear-gradient(135deg, #eff6ff, #dbeafe);
+      border: 2px solid #3b82f6;
+      border-radius: 14px;
+      padding: 16px 20px;
+      margin-top: 14px;
+      font-size: 0.96rem;
+      color: #1e3a8a;
+    }
+
+    /* 확인 문제 박스 */
+    .checkpoint-box {
+      margin-top: 22px;
+      background: #f0fdf4;
+      border: 2px solid #86efac;
+      border-radius: 14px;
+      padding: 18px;
+    }
+    .checkpoint-box h3 { margin: 0 0 10px; color: #166534; font-size: 1.08rem; }
+
+    /* 가상실험 캔버스 영역 */
+    .lab-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      background: #f8fafc;
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      margin-bottom: 12px;
+    }
+    .lab-controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .rod-type-group {
+      display: inline-flex;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 2px solid var(--primary);
+    }
+    .rod-type-btn {
+      border: none;
+      padding: 8px 14px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      background: #fff;
+      color: var(--primary);
+    }
+    .rod-type-btn.active { background: var(--primary); color: #fff; }
+
+    .toggle-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #fff;
+      padding: 7px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .canvas-wrap {
+      position: relative;
+      width: 100%;
+      border: 2px solid #94a3b8;
+      border-radius: 14px;
+      overflow: hidden;
+      background: #e2e8f0;
+      touch-action: none;
+    }
+    canvas { display: block; width: 100%; height: auto; cursor: grab; }
+    canvas:active { cursor: grabbing; }
+
+    .mission-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 14px;
+    }
+    @media (max-width: 700px) { .mission-list { grid-template-columns: 1fr; } }
+    .mission-item {
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      font-size: 0.86rem;
+    }
+    .mission-item.done { background: #dcfce7; border-color: #86efac; color: #166534; font-weight: 700; }
+
+    /* 문항 공통 */
+    .quiz-item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 12px;
+      background: #fff;
+    }
+    .quiz-q { font-weight: 700; margin-bottom: 9px; font-size: 0.95rem; }
+    .quiz-choices label {
+      display: block;
+      padding: 7px 12px;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      margin-bottom: 6px;
+      cursor: pointer;
+      font-size: 0.92rem;
+    }
+    .quiz-choices label:hover { background: #f1f5f9; }
+    .feedback-msg { margin-top: 8px; padding: 9px 12px; border-radius: 8px; font-size: 0.88rem; display: none; }
+    .feedback-msg.ok { display: block; background: #dcfce7; color: #166534; font-weight: 600; }
+    .feedback-msg.no { display: block; background: #fee2e2; color: #991b1b; font-weight: 600; }
+
+    /* 추가 연습문제 알루미늄박 애니메이션 카드 */
+    .foil-demo-box {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    /* 핵심정리 빈칸 드롭다운 */
+    .summary-box {
+      background: #fffbeb;
+      border: 2px solid #fcd34d;
+      border-radius: 14px;
+      padding: 20px;
+      font-size: 1.04rem;
+      line-height: 2.1;
+    }
+    .blank-select {
+      padding: 4px 10px;
+      font-size: 0.98rem;
+      font-weight: 700;
+      border: 2px solid var(--primary);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--primary-dark);
+      margin: 0 4px;
+    }
+
+    /* 모달 (관리자 / 교사 대시보드) */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15,23,42,0.65);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 16px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-box {
+      background: #fff;
+      border-radius: 16px;
+      max-width: 860px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    }
+    .pin-box { max-width: 380px; }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-weight: 700; margin-bottom: 6px; font-size: 0.92rem; }
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 1rem;
+    }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.86rem; }
+    th, td { border: 1px solid var(--border); padding: 8px 10px; text-align: center; }
+    th { background: #f1f5f9; font-weight: 700; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>⚡ 중2 과학 가상실험: 정전기 유도</h1>
+    <div class="sub">VII. 전기와 자기 | 금속 물체에 대전체를 가까이 가져갈 때의 현상 탐구</div>
+  </div>
+  <div class="header-actions">
+    <span class="admin-badge" id="adminBadge">🛠️ 관리자 모드 활성</span>
+    <span class="student-badge" id="studentBadge">로그인 대기</span>
+    <button class="btn-header" onclick="openAdminModal()">🔑 관리자 모드</button>
+    <button class="btn-header" onclick="openTeacherModal()">📊 교사 대시보드</button>
+  </div>
+</header>
+
+<!-- 첫 화면: 전용 로그인 화면 (반, 번호만 입력) -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <h2>👩‍🔬 학생 로그인</h2>
+    <p>가상실험 수업을 시작하려면 반과 번호를 선택·입력하세요.<br />(개인정보 보호를 위해 이름은 입력하지 않습니다)</p>
+    <div class="form-group">
+      <label for="inBan">반 선택 (1반 ~ 11반)</label>
+      <select id="inBan">
+        <option value="1">1반</option>
+        <option value="2">2반</option>
+        <option value="3">3반</option>
+        <option value="4">4반</option>
+        <option value="5">5반</option>
+        <option value="6">6반</option>
+        <option value="7">7반</option>
+        <option value="8">8반</option>
+        <option value="9">9반</option>
+        <option value="10">10반</option>
+        <option value="11">11반</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="inBunho">번호 입력</label>
+      <input type="number" id="inBunho" min="1" max="45" placeholder="번호를 숫자로 입력 (예: 12)" onkeydown="if(event.key==='Enter') startLesson()" />
+    </div>
+    <button class="btn" style="width:100%; font-size:1.05rem; padding:13px;" onclick="startLesson()">수업 시작하기 →</button>
+  </div>
+</div>
+
+<!-- 메인 학습 컨테이너 -->
+<div class="container" id="mainContainer">
+  <!-- 5단계 진행 내비게이션 -->
+  <div class="stepper">
+    <button class="step-btn active unlocked" id="tab-1" onclick="goStep(1)">1. 동기유발</button>
+    <button class="step-btn" id="tab-2" onclick="goStep(2)" disabled>2. 개념탐구</button>
+    <button class="step-btn" id="tab-3" onclick="goStep(3)" disabled>3. 가상실험</button>
+    <button class="step-btn" id="tab-4" onclick="goStep(4)" disabled>4. 형성평가</button>
+    <button class="step-btn" id="tab-5" onclick="goStep(5)" disabled>5. 핵심정리·제출</button>
+  </div>
+
+  <!-- 1단계: 동기유발 (유튜브 쇼츠 + 단계별 질문) -->
+  <section class="card active" id="step-1">
+    <h2>1단계. 동기유발: 털목도리로 문지른 풍선에 캔이 끌려오는 까닭은?</h2>
+    <div class="objective-box">
+      <strong>학습 목표:</strong> 정전기 유도 현상을 관찰하고, 그 과정을 전기력과 원자 모형(전자의 이동)을 이용하여 설명할 수 있다.
+    </div>
+
+    <div class="motivation-layout">
+      <div class="video-box">
+        <iframe
+          src="https://www.youtube-nocookie.com/embed/Z1NkUG1WUmw?rel=0"
+          title="정전기 유도 동기유발 영상"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+        </iframe>
+        <a class="video-fallback-link" href="https://youtube.com/shorts/Z1NkUG1WUmw?si=3tSvlRvzomF-M5No" target="_blank" rel="noopener">
+          ▶ 영상이 바로 재생되지 않으면 클릭 (유튜브 쇼츠 열기)
+        </a>
+      </div>
+
+      <div>
+        <p style="margin-top:0;">왼쪽 영상을 확인한 뒤, 아래 단계별 질문에 답해 봅시다.</p>
+
+        <!-- 동기유발 1) 드롭다운 질문 -->
+        <div class="mot-step-card">
+          <h3>1) 풍선의 대전 상태 확인</h3>
+          <div style="font-size:0.98rem; line-height:2;">
+            털목도리로 풍선을 마찰시키면 풍선은
+            <select class="blank-select" id="motChargeSelect" onchange="checkMotStep1()">
+              <option value="">[선택]</option>
+              <option value="(+)">(+)</option>
+              <option value="(-)">(-)</option>
+              <option value="중성">중성</option>
+            </select>
+            전기로 대전된다.
+          </div>
+          <div id="motStep1Feedback" class="feedback-msg"></div>
+        </div>
+
+        <!-- 동기유발 2) 사고력 질문 -->
+        <div class="mot-step-card" id="motStep2Card" style="opacity:0.55; pointer-events:none;">
+          <h3>2) 알루미늄 캔이 끌려온 까닭 생각해 보기</h3>
+          <p style="margin:0 0 8px; font-size:0.94rem;">
+            대전체를 가까이 가져갔을 때 캔이 끌려왔다는 것은 대전체와 캔 사이에 <strong>전기력(인력)</strong>이 작용했다는 것이다. 알루미늄 캔은 마찰하지도 않았는데 어떻게 전기를 띠게 되어 인력이 작용했을까?
+          </p>
+          <div class="hint-box">
+            💡 <strong>힌트:</strong> 알루미늄 캔과 같은 금속 물질 내부의 전자는 힘을 받아 자유롭게 움직일 수 있음
+          </div>
+          <textarea class="thought-textarea" id="motThoughtInput" placeholder="힌트를 참고하여 내 생각을 자유롭게 적어 보세요. (예: (-)대전체인 풍선을 가까이 가져가면 알루미늄 캔 속 전자가...)" oninput="checkMotStep2()"></textarea>
+          <div style="margin-top:10px; text-align:right;">
+            <button type="button" class="btn btn-outline" style="padding:7px 14px; font-size:0.88rem;" onclick="submitMotThought()">생각 기록 완료</button>
+          </div>
+          <div id="motStep2Feedback" class="feedback-msg"></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 18px; text-align: right;">
+      <button class="btn" id="next-1" onclick="unlockStep(2)" disabled>2단계: 개념탐구로 이동 →</button>
+    </div>
+  </section>
+
+  <!-- 2단계: 개념탐구 -->
+  <section class="card" id="step-2">
+    <h2>2단계. 개념탐구: 대전체를 가까이 가져갈 때의 전하 분포</h2>
+    <p>알루미늄과 같은 금속 내부에는 제자리에 고정된 <strong>(+)원자핵</strong>과, 자유롭게 움직이는 <strong>(-)전자</strong>가 있습니다. 대전체를 가까이 가져갈 때 전하 분포가 어떻게 달라지는지 비교해 봅시다.</p>
+
+    <div class="concept-grid-3">
+      <!-- 그림 1: 대전체 가까이 가져가기 전 -->
+      <div class="concept-box">
+        <div>
+          <h3>① 대전체를 가까이 가져가기 전</h3>
+          <div class="diagram-wrap">
+            <svg viewBox="0 0 240 135" width="100%">
+              <rect x="65" y="25" width="110" height="80" rx="14" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+              <text x="120" y="16" font-size="11" font-weight="bold" text-anchor="middle" fill="#334155">전기적 중성 상태</text>
+              <circle cx="92" cy="48" r="8" fill="#ef4444"/><text x="92" y="52" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold">+</text>
+              <circle cx="106" cy="54" r="6" fill="#2563eb"/><text x="106" y="57" font-size="10" fill="#fff" text-anchor="middle" font-weight="bold">-</text>
+
+              <circle cx="145" cy="48" r="8" fill="#ef4444"/><text x="145" y="52" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold">+</text>
+              <circle cx="159" cy="54" r="6" fill="#2563eb"/><text x="159" y="57" font-size="10" fill="#fff" text-anchor="middle" font-weight="bold">-</text>
+
+              <circle cx="92" cy="84" r="8" fill="#ef4444"/><text x="92" y="88" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold">+</text>
+              <circle cx="106" cy="90" r="6" fill="#2563eb"/><text x="106" y="93" font-size="10" fill="#fff" text-anchor="middle" font-weight="bold">-</text>
+
+              <circle cx="145" cy="84" r="8" fill="#ef4444"/><text x="145" y="88" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold">+</text>
+              <circle cx="159" cy="90" r="6" fill="#2563eb"/><text x="159" y="93" font-size="10" fill="#fff" text-anchor="middle" font-weight="bold">-</text>
+              <text x="120" y="124" font-size="10.5" text-anchor="middle" fill="#475569">(+)전하와 (-)전하가 고르게 분포</text>
+            </svg>
+          </div>
+        </div>
+        <div class="summary-bullets">
+          <div class="row">• (+)전하량 = (-)전하량</div>
+          <div class="row">• 전자가 고르게 퍼져 있어 전체적으로 <strong>전기적 중성</strong>을 띰</div>
+        </div>
+      </div>
+
+      <!-- 그림 2: (-)대전체를 가까이 가져갈 때 -->
+      <div class="concept-box">
+        <div>
+          <h3>② (-)대전체를 가까이 가져갈 때</h3>
+          <div class="diagram-wrap">
+            <svg viewBox="0 0 240 135" width="100%">
+              <rect x="14" y="25" width="24" height="80" rx="10" fill="#64748b" stroke="#1e293b" stroke-width="1.5"/>
+              <circle cx="26" cy="42" r="6" fill="#2563eb"/><text x="26" y="45" font-size="10" fill="#fff" text-anchor="middle" font-weight="bold">-</text>
+              <circle cx="26" cy="65" r="6" fill="#2563eb"/><text x="26" y="68" font-size="10" fill="#fff" text-anchor="middle" font-weight="bold">-</text>
+              <circle cx="26" cy="88" r="6" fill="#2563eb"/><text x="26" y="91" font-size="10" fill="#fff" text-anchor="middle" font-weight="bold">-</text>
+              <text x="26" y="16" font-size="10.5" font-weight="bold" text-anchor="middle" fill="#1e293b">(-)대전체</text>
+
+              <rect x="65" y="25" width="145" height="80" rx="14" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+              <line x1="137" y1="25" x2="137" y2="105" stroke="#94a3b8" stroke-dasharray="4 3"/>
+              <text x="100" y="16" font-size="10.5" font-weight="bold" text-anchor="middle" fill="#dc2626">(+)전기</text>
+              <text x="174" y="16" font-size="10.5" font-weight="bold" text-anchor="middle" fill="#1d4ed8">(-)전기</text>
+
+              <circle cx="92" cy="48" r="8" fill="#ef4444"/><text x="92" y="52" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold">+</text>
+              <circle cx="92" cy="84" r="8" fill="#ef4444"/><text x="92" y="88" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold">+</text>
+              <circle cx="158" cy="48" r="8" fill="#ef4444"/><text x="158" y="52" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold">+</text>
+              <circle cx="158" cy="84" r="8" fill="#ef4444"/><text x="158" y="88" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold">+</text>
+
+              <circle cx="182" cy="42" r="6" fill="#2563eb"/><text x="182" y="45" font-size="10" fill="#fff" text-anchor="middle" font-weight="bold">-</text>
+              <circle cx="195" cy="56" r="6" fill="#2563eb"/><text x="195" y="59" font-size="10" fill="#fff" text-anchor="middle" font-weight="bold">-</text>
+              <circle cx="182" cy="76" r="6" fill="#2563eb"/><text x="182" y="79" font-size="10" fill="#fff" text-anchor="middle" font-weight="bold">-</text>
+              <circle cx="195" cy="90" r="6" fill="#2563eb"/><text x="195" y="93" font-size="10" fill="#fff" text-anchor="middle" font-weight="bold">-</text>
+
+              <path d="M 112 65 L 154 65" stroke="#dc2626" stroke-width="2.5" marker-end="url(#arrowR)"/>
+              <text x="137" y="124" font-size="10.5" text-anchor="middle" fill="#dc2626" font-weight="bold">전자가 척력을 받아 먼 쪽으로 이동</text>
+              <defs>
+                <marker id="arrowR" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                  <path d="M0,0 L6,3 L0,6 Z" fill="#dc2626"/>
+                </marker>
+              </defs>
+            </svg>
+          </div>
+        </div>
+        <div class="summary-bullets">
+          <div class="row">• <strong>대전체와 가까운 곳</strong> : 상대적으로 (+)전하의 양이 많아짐 → <span class="tag-plus">(+)전기</span></div>
+          <div class="row">• <strong>대전체와 먼 곳</strong> : 상대적으로 (-)전하의 양이 많아짐 → <span class="tag-minus">(-)전기</span></div>
+          <div class="row">• 가까운 쪽이 반대 전기를 띠므로 <strong>인력을 받아 끌려옴</strong></div>
+        </div>
+      </div>
+
+      <!-- 그림 3: (+)대전체를 가까이 가져갈 때 -->
+      <div class="concept-box">
+        <div>
+          <h3>③ (+)대전체를 가까이 가져갈 때</h3>
+          <div class="diagram-wrap">
+            <svg viewBox="0 0 240 135" width="100%">
+              <rect x="14" y="25" width="24" height="80" rx="10" fill="#fca5a5" stroke="#b91c1c" stroke-width="1.5"/>
+              <circle cx="26" cy="42" r="6.5" fill="#ef4444"/><text x="26" y="45.5" font-size="10" fill="#fff" text-anchor="middle" font-weight="bold">+</text>
+              <circle cx="26" cy="65" r="6.5" fill="#ef4444"/><text x="26" y="68.5" font-size="10" fill="#fff" text-anchor="middle" font-weight="bold">+</text>
+              <circle cx="26" cy="88" r="6.5" fill="#ef4444"/><text x="26" y="91.5" font-size="10" fill="#fff" text-anchor="middle" font-weight="bold">+</text>
+              <text x="26" y="16" font-size="10.5" font-weight="bold" text-anchor="middle" fill="#b91c1c">(+)대전체</text>
+
+              <rect x="65" y="25" width="145" height="80" rx="14" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+              <line x1="137" y1="25" x2="137" y2="105" stroke="#94a3b8" stroke-dasharray="4 3"/>
+              <text x="100" y="16" font-size="10.5" font-weight="bold" text-anchor="middle" fill="#1d4ed8">(-)전기</text>
+              <text x="174" y="16" font-size="10.5" font-weight="bold" text-anchor="middle" fill="#dc2626">(+)전기</text>
+
+              <circle cx="110" cy="48" r="8" fill="#ef4444"/><text x="110" y="52" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold">+</text>
+              <circle cx="110" cy="84" r="8" fill="#ef4444"/><text x="110" y="88" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold">+</text>
+              <circle cx="174" cy="48" r="8" fill="#ef4444"/><text x="174" y="52" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold">+</text>
+              <circle cx="174" cy="84" r="8" fill="#ef4444"/><text x="174" y="88" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold">+</text>
+
+              <circle cx="80" cy="42" r="6" fill="#2563eb"/><text x="80" y="45" font-size="10" fill="#fff" text-anchor="middle" font-weight="bold">-</text>
+              <circle cx="92" cy="56" r="6" fill="#2563eb"/><text x="92" y="59" font-size="10" fill="#fff" text-anchor="middle" font-weight="bold">-</text>
+              <circle cx="80" cy="76" r="6" fill="#2563eb"/><text x="80" y="79" font-size="10" fill="#fff" text-anchor="middle" font-weight="bold">-</text>
+              <circle cx="92" cy="90" r="6" fill="#2563eb"/><text x="92" y="93" font-size="10" fill="#fff" text-anchor="middle" font-weight="bold">-</text>
+
+              <path d="M 162 65 L 120 65" stroke="#1d4ed8" stroke-width="2.5" marker-end="url(#arrowL)"/>
+              <text x="137" y="124" font-size="10.5" text-anchor="middle" fill="#1d4ed8" font-weight="bold">전자가 인력을 받아 가까운 쪽으로 이동</text>
+              <defs>
+                <marker id="arrowL" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                  <path d="M0,0 L6,3 L0,6 Z" fill="#1d4ed8"/>
+                </marker>
+              </defs>
+            </svg>
+          </div>
+        </div>
+        <div class="summary-bullets">
+          <div class="row">• <strong>대전체와 가까운 곳</strong> : 상대적으로 (-)전하의 양이 많아짐 → <span class="tag-minus">(-)전기</span></div>
+          <div class="row">• <strong>대전체와 먼 곳</strong> : 상대적으로 (+)전하의 양이 많아짐 → <span class="tag-plus">(+)전기</span></div>
+          <div class="row">• 가까운 쪽이 반대 전기를 띠므로 <strong>인력을 받아 끌려옴</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 일반화 핵심 정리 박스 -->
+    <div class="generalize-box">
+      <strong>💡 한눈에 정리하는 정전기 유도 원리:</strong><br />
+      대전체를 금속 물체에 가까이 가져갈 때 <strong>대전체의 종류((+) 또는 (-))와 관계없이 대전체와 가까운 부분이 대전체의 반대 전기를 띠게 되므로</strong>, 금속 물체와 대전체 사이에 <strong>인력이 작용해 끌려옵니다.</strong>
+    </div>
+
+    <!-- 개념탐구 확인 문제 -->
+    <div class="checkpoint-box">
+      <h3>✅ 개념탐구 확인 문제 (모두 정답을 맞혀야 가상실험으로 이동할 수 있습니다)</h3>
+      <div id="conceptCheckContainer"></div>
+      <button class="btn btn-success" onclick="checkConceptCheckpoint()">개념 확인 문제 채점하기</button>
+      <div id="conceptCheckStatus" style="margin-top:8px; font-weight:700;"></div>
+    </div>
+
+    <div style="margin-top: 18px; display:flex; justify-content:space-between;">
+      <button class="btn btn-outline" onclick="goStep(1)">← 이전 단계</button>
+      <button class="btn" id="next-2" onclick="unlockStep(3)" disabled>3단계: 가상실험 시작 →</button>
+    </div>
+  </section>
+
+  <!-- 3단계: 가상실험 (바닥과 수평으로 공중에 띄운 막대의 옆면이 둥근 깡통을 향해 가까이 가는 모습) -->
+  <section class="card" id="step-3">
+    <h2>3단계. 가상실험: 둥글게 굴러오는 알루미늄 깡통 실험</h2>
+    <p style="font-size:0.92rem; color:#334155;">
+      <strong>알루미늄 깡통과 나란한 방향(바닥과 수평)으로 공중에 띄워 든 막대의 옆면</strong>을 <strong>둥근 단면이 보이는 알루미늄 깡통</strong>에 가까이 가져가 보세요. 대전체를 가까이 가져갈 때 깡통 내부에서 <strong>(-)전자가 반대편 또는 가까운 쪽으로 크게 이동하는 모습</strong>과 깡통이 굴러오는 방향을 관찰할 수 있습니다!
+    </p>
+
+    <div class="lab-toolbar">
+      <div class="lab-controls">
+        <div class="rod-type-group">
+          <button class="rod-type-btn active" id="btnTypeMinus" onclick="setRodType('minus')">플라스틱 막대 ((-)대전용)</button>
+          <button class="rod-type-btn" id="btnTypePlus" onclick="setRodType('plus')">유리 막대 ((+)대전용)</button>
+        </div>
+        <button class="btn" id="btnRub" onclick="rubRod()">🧤 털가죽으로 마찰 ((-)대전)</button>
+        <button class="btn btn-outline" onclick="resetLab()">↺ 위치 초기화</button>
+      </div>
+      <label class="toggle-label">
+        <input type="checkbox" id="chkCharges" checked onchange="drawLab()" />
+        ⚡ 전하 분포 보기 ((+)원자핵 / (-)전자)
+      </label>
+    </div>
+
+    <div class="canvas-wrap">
+      <canvas id="labCanvas" width="880" height="430"></canvas>
+    </div>
+    <div id="labStatusBanner" style="margin-top:10px; padding:10px 14px; border-radius:10px; background:#eff6ff; font-weight:700; font-size:0.92rem; color:#1e40af;">
+      안내: 바닥과 수평으로 띄워 든 막대를 좌우로 드래그해 막대의 옆면을 알루미늄 깡통에 가까이 가져가 보세요!
+    </div>
+
+    <!-- 탐구 미션 체크리스트 -->
+    <div class="mission-list">
+      <div class="mission-item" id="m1">⬜ 미션 1: 대전되지 않은 막대를 깡통 옆에 가까이 가져가기</div>
+      <div class="mission-item" id="m2">⬜ 미션 2: 플라스틱 막대를 (-)대전시켜 전자 이동 & 깡통 굴림 관찰</div>
+      <div class="mission-item" id="m3">⬜ 미션 3: 유리 막대를 (+)대전시켜 전자 이동 & 깡통 굴림 관찰</div>
+      <div class="mission-item" id="m4">⬜ 미션 4: 아래 [가상실험 확인 문제] 모두 정답 맞히기</div>
+    </div>
+
+    <!-- 가상실험 확인 문제 -->
+    <div class="checkpoint-box">
+      <h3>✅ 가상실험 확인 문제 (실험 결과를 바탕으로 정답을 맞혀야 4단계로 이동합니다)</h3>
+      <div id="labCheckContainer"></div>
+      <button class="btn btn-success" onclick="checkLabCheckpoint()">가상실험 확인 문제 채점하기</button>
+      <div id="labCheckStatus" style="margin-top:8px; font-weight:700;"></div>
+    </div>
+
+    <div style="margin-top: 18px; display:flex; justify-content:space-between; align-items:center;">
+      <button class="btn btn-outline" onclick="goStep(2)">← 이전 단계</button>
+      <button class="btn" id="next-3" onclick="unlockStep(4)" disabled>4단계: 형성평가로 이동 →</button>
+    </div>
+  </section>
+
+  <!-- 4단계: 형성평가 -->
+  <section class="card" id="step-4">
+    <h2>4단계. 형성평가: 배운 내용 확인하기</h2>
+    <p style="font-size:0.9rem; color:var(--muted);">모든 문항을 풀고 채점하기를 누르면 5단계 핵심정리가 열립니다.</p>
+
+    <div id="quizContainer"></div>
+
+    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
+      <button class="btn" onclick="gradeMainQuiz()">채점하기</button>
+      <button class="btn btn-outline" onclick="toggleExtraQuiz()">➕ 추가 연습문제 풀어보기</button>
+    </div>
+    <div id="quizResultBox" style="margin-top:14px; font-weight:700;"></div>
+
+    <!-- 추가 연습문제 영역 -->
+    <div id="extraQuizSection" style="display:none; margin-top:20px; padding-top:16px; border-top:2px dashed var(--border);">
+      <h3>🔥 추가 연습문제 (스스로 확인하기 심화)</h3>
+      <div id="extraQuizContainer"></div>
+      <button class="btn btn-outline" onclick="gradeExtraQuiz()">추가 문제 채점하기</button>
+      <div id="extraQuizResult" style="margin-top:10px; font-weight:700;"></div>
+    </div>
+
+    <div style="margin-top: 18px; display:flex; justify-content:space-between;">
+      <button class="btn btn-outline" onclick="goStep(3)">← 이전 단계</button>
+      <button class="btn" id="next-4" onclick="unlockStep(5)" disabled>5단계: 핵심정리 및 제출로 이동 →</button>
+    </div>
+  </section>
+
+  <!-- 5단계: 핵심정리 및 구글 시트 제출 -->
+  <section class="card" id="step-5">
+    <h2>5단계. 핵심정리 및 결과 제출</h2>
+    <p>빈칸의 드롭다운을 눌러 오늘 배운 <strong>정전기 유도</strong>의 핵심 내용을 완성한 뒤 제출 버튼을 눌러 주세요.</p>
+
+    <div class="summary-box">
+      1. 대전되지 않은 금속 물체에 대전체를 가까이 가져갈 때, 대전체와 가까운 쪽은 대전체와
+      <select class="blank-select" id="b1">
+        <option value="">[선택]</option>
+        <option value="같은">같은</option>
+        <option value="다른">다른</option>
+        <option value="중성">중성</option>
+      </select>
+      종류의 전기를 띠고, 먼 쪽은 대전체와 같은 종류의 전기를 띠는 현상을
+      <select class="blank-select" id="b2">
+        <option value="">[선택]</option>
+        <option value="마찰 전기">마찰 전기</option>
+        <option value="정전기 유도">정전기 유도</option>
+        <option value="전류 흐름">전류 흐름</option>
+      </select>(이)라고 한다.<br />
+      2. 알루미늄 깡통에 (-)대전체를 가까이 가져가면 깡통 속의
+      <select class="blank-select" id="b3">
+        <option value="">[선택]</option>
+        <option value="원자핵">원자핵</option>
+        <option value="중성자">중성자</option>
+        <option value="전자">전자</option>
+      </select>가 전기력을 받아 대전체에서
+      <select class="blank-select" id="b4">
+        <option value="">[선택]</option>
+        <option value="가까운">가까운</option>
+        <option value="먼">먼</option>
+        <option value="위">위</option>
+      </select>
+      쪽으로 이동하므로, 깡통에서 대전체와 가까운 쪽은
+      <select class="blank-select" id="b5">
+        <option value="">[선택]</option>
+        <option value="(+)전기">(+)전기</option>
+        <option value="(-)전기">(-)전기</option>
+        <option value="중성상태">중성상태</option>
+      </select>를 띠어 대전체 쪽으로 끌려 온다.
+    </div>
+
+    <div style="margin-top: 14px;">
+      <button class="btn btn-outline" onclick="checkSummary()">핵심정리 정답 확인하기</button>
+      <span id="summaryFeedback" style="margin-left:10px; font-weight:700;"></span>
+    </div>
+
+    <div style="margin-top: 24px; padding-top: 18px; border-top: 2px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+      <button class="btn btn-outline" onclick="goStep(4)">← 이전 단계</button>
+      <button class="btn btn-success" id="btnSubmitSheet" onclick="submitToGoogleSheet()">📤 구글 시트로 학습 결과 제출하기</button>
+    </div>
+    <div id="submitStatus" style="margin-top:12px; font-weight:700;"></div>
+  </section>
+</div>
+
+<!-- 관리자 모드 PIN 모달 -->
+<div class="modal-backdrop" id="adminModal">
+  <div class="modal-box pin-box">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+      <h2 style="margin:0; border:none; font-size:1.15rem;">🔑 관리자 모드 인증</h2>
+      <button class="btn btn-outline" style="padding:5px 10px;" onclick="closeAdminModal()">닫기 ✕</button>
+    </div>
+    <p style="font-size:0.86rem; color:var(--muted); margin-top:0;">비밀번호를 입력하면 문제를 풀지 않고도 모든 단계를 자유롭게 확인·점검할 수 있습니다.</p>
+    <div class="form-group">
+      <label for="adminPinInput">비밀번호 입력</label>
+      <input type="password" id="adminPinInput" placeholder="비밀번호 입력" onkeydown="if(event.key==='Enter') activateAdminMode()" />
+    </div>
+    <button class="btn" style="width:100%;" onclick="activateAdminMode()">관리자 모드 켜기</button>
+    <p id="adminPinError" style="color:var(--danger); font-size:0.85rem; margin-bottom:0;"></p>
+  </div>
+</div>
+
+<!-- 교사 대시보드 모달 -->
+<div class="modal-backdrop" id="teacherModal">
+  <div class="modal-box">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h2 style="margin:0; border:none;">📊 교사용 실시간 제출 현황 대시보드</h2>
+      <button class="btn btn-outline" onclick="closeTeacherModal()">닫기 ✕</button>
+    </div>
+
+    <div id="pinGate" style="margin-top:16px; max-width:340px;">
+      <div class="form-group">
+        <label for="pinInput">교사 비밀번호(PIN) 입력</label>
+        <input type="password" id="pinInput" placeholder="비밀번호 입력" onkeydown="if(event.key==='Enter') verifyPin()" />
+      </div>
+      <button class="btn" onclick="verifyPin()">대시보드 열기</button>
+      <p id="pinError" style="color:var(--danger); font-size:0.85rem;"></p>
+    </div>
+
+    <div id="dashboardContent" style="display:none; margin-top:16px;">
+      <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between; background:#f8fafc; padding:12px; border-radius:10px;">
+        <div style="display:flex; gap:10px; align-items:center;">
+          <label><strong>반 필터:</strong>
+            <select id="filterBan" onchange="renderDashboardTable()">
+              <option value="ALL">전체 반</option>
+              <option value="1">1반</option><option value="2">2반</option><option value="3">3반</option>
+              <option value="4">4반</option><option value="5">5반</option><option value="6">6반</option>
+              <option value="7">7반</option><option value="8">8반</option><option value="9">9반</option>
+              <option value="10">10반</option><option value="11">11반</option>
+            </select>
+          </label>
+          <span id="dashCountBadge" style="font-weight:700; color:var(--primary-dark);">제출 인원: 0명</span>
+        </div>
+        <button class="btn" onclick="fetchDashboardData()">🔄 새로고침</button>
+      </div>
+
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>반</th>
+              <th>번호</th>
+              <th>형성평가</th>
+              <th>핵심정리</th>
+              <th>실험탐구</th>
+              <th>오답문항</th>
+              <th>제출시각</th>
+            </tr>
+          </thead>
+          <tbody id="dashTableBody">
+            <tr><td colspan="7">데이터를 불러오는 중...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ★ 2단계에서 복사한 구글 앱스크립트 웹 앱 URL을 아래 따옴표 안에 붙여넣으세요.
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2Bkmonazyp8j3e0ZEqlRBNsnCEVJg3PwjWFwBN1DHq5kQiHyd2BvBdfw6Hk0eQ2yaCw/exec";
+  // ★ 교사 대시보드 및 관리자 모드 공통 비밀번호
+  const TEACHER_PIN = "9284";
+
+  let student = { ban: "", bunho: "" };
+  let isAdmin = false;
+  let unlockedMax = 1;
+  let quizScoreText = "미완료";
+  let wrongListText = "없음";
+  let summarySolved = false;
+  let dashboardRows = [];
+
+  // 1. 첫 화면 로그인
+  function startLesson() {
+    const ban = document.getElementById("inBan").value;
+    const bunho = document.getElementById("inBunho").value.trim();
+    if (!bunho) {
+      alert("번호를 입력해 주세요.");
+      return;
+    }
+    student = { ban, bunho };
+    document.getElementById("studentBadge").textContent = `${ban}반 ${bunho}번`;
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("mainContainer").style.display = "block";
+    initAllQuizzes();
+    startLabAnimationLoop();
+  }
+
+  // 관리자 모드
+  function openAdminModal() {
+    document.getElementById("adminModal").classList.add("open");
+    document.getElementById("adminPinInput").focus();
+  }
+  function closeAdminModal() {
+    document.getElementById("adminModal").classList.remove("open");
+  }
+  function activateAdminMode() {
+    const val = document.getElementById("adminPinInput").value;
+    if (val !== TEACHER_PIN) {
+      document.getElementById("adminPinError").textContent = "비밀번호가 일치하지 않습니다.";
+      return;
+    }
+    isAdmin = true;
+    closeAdminModal();
+
+    if (document.getElementById("loginScreen").style.display !== "none") {
+      student = { ban: "관리자", bunho: "0" };
+      document.getElementById("studentBadge").textContent = "교사(관리자)";
+      document.getElementById("loginScreen").style.display = "none";
+      document.getElementById("mainContainer").style.display = "block";
+      initAllQuizzes();
+      startLabAnimationLoop();
+    }
+
+    document.getElementById("adminBadge").style.display = "inline-block";
+    unlockedMax = 5;
+    for (let s = 1; s <= 5; s++) {
+      const tab = document.getElementById(`tab-${s}`);
+      tab.disabled = false;
+      tab.classList.add("unlocked");
+      const nextBtn = document.getElementById(`next-${s}`);
+      if (nextBtn) nextBtn.disabled = false;
+    }
+    drawLab();
+    alert("관리자 모드가 활성화되었습니다. 이제 문제를 풀지 않고도 1~5단계 모든 화면을 자유롭게 이동하며 확인할 수 있습니다.");
+  }
+
+  // 단계 전환 및 순차 잠금
+  function goStep(step) {
+    if (!isAdmin && step > unlockedMax) return;
+    document.querySelectorAll(".card").forEach(c => c.classList.remove("active"));
+    document.getElementById(`step-${step}`).classList.add("active");
+    document.querySelectorAll(".step-btn").forEach((b, idx) => {
+      b.classList.toggle("active", idx + 1 === step);
+    });
+    if (step === 3) drawLab();
+    if (step === 4) drawFoilDemo();
+  }
+
+  function unlockStep(nextStep) {
+    if (nextStep > unlockedMax) {
+      unlockedMax = nextStep;
+      const tab = document.getElementById(`tab-${nextStep}`);
+      tab.disabled = false;
+      tab.classList.add("unlocked");
+      document.getElementById(`tab-${nextStep - 1}`).classList.add("done");
+    }
+    goStep(nextStep);
+  }
+
+  // 1단계: 동기유발 단계별 질문 처리
+  function checkMotStep1() {
+    const val = document.getElementById("motChargeSelect").value;
+    const fb = document.getElementById("motStep1Feedback");
+    const step2Card = document.getElementById("motStep2Card");
+
+    if (!val) {
+      fb.className = "feedback-msg";
+      return;
+    }
+    if (val === "(-)") {
+      fb.className = "feedback-msg ok";
+      fb.textContent = "정답입니다! 털목도리에서 풍선으로 전자가 이동하여 풍선은 (-)전기로 대전됩니다. 이제 아래 2)번 질문에 내 생각을 적어 보세요.";
+      step2Card.style.opacity = "1";
+      step2Card.style.pointerEvents = "auto";
+    } else {
+      fb.className = "feedback-msg no";
+      fb.textContent = "다시 생각해 보세요! 털목도리와 고무 풍선을 마찰하면 전자가 털목도리에서 풍선으로 이동합니다.";
+    }
+  }
+
+  function checkMotStep2() {
+    const txt = document.getElementById("motThoughtInput").value.trim();
+    if (txt.length >= 5) {
+      document.getElementById("next-1").disabled = false;
+    }
+  }
+
+  function submitMotThought() {
+    const txt = document.getElementById("motThoughtInput").value.trim();
+    const fb = document.getElementById("motStep2Feedback");
+    if (txt.length < 4) {
+      alert("힌트를 참고하여 내 생각을 한 문장 이상 간단히 적어 주세요!");
+      return;
+    }
+    fb.className = "feedback-msg ok";
+    fb.textContent = "잘 정리했습니다! 이제 2단계 개념탐구로 이동해 알루미늄 캔 내부의 전자가 실제로 어떻게 움직이는지 확인해 봅시다.";
+    document.getElementById("next-1").disabled = false;
+  }
+
+  // 2단계: 개념탐구 확인 문제
+  const conceptChecks = [
+    {
+      q: "확인 1. 대전되지 않은 알루미늄 깡통에 (-)대전체를 가까이 가져갈 때, 깡통 내부에서 이동하는 입자와 가까운 쪽이 띠는 전기의 종류는?",
+      choices: [
+        "(+)원자핵이 이동하며, 가까운 쪽은 (-)전기를 띤다.",
+        "(-)전자가 먼 쪽으로 이동하여 상대적으로 (+)전하량이 많아진 가까운 쪽이 (+)전기를 띤다.",
+        "(-)전자가 가까운 쪽으로 이동하여 가까운 쪽이 (-)전기를 띤다."
+      ],
+      ans: 1,
+      exp: "원자핵은 고정되어 있고, (-)전자가 척력을 받아 먼 쪽으로 이동하므로 상대적으로 (+)전하의 양이 많아진 가까운 쪽이 (+)전기를 띱니다."
+    },
+    {
+      q: "확인 2. 대전되지 않은 금속 물체에 대전체를 가까이 가져갈 때, 대전체의 종류((+) 또는 (-))에 따른 금속 물체의 움직임으로 옳은 것은?",
+      choices: [
+        "(-)대전체를 가까이 가져갈 때만 끌려오고, (+)대전체를 가져갈 때는 밀려난다.",
+        "(+)대전체를 가까이 가져갈 때만 끌려오고, (-)대전체를 가져갈 때는 밀려난다.",
+        "대전체의 종류와 관계없이 가까운 부분이 반대 전기를 띠게 되므로 항상 인력이 작용해 끌려온다."
+      ],
+      ans: 2,
+      exp: "대전체의 종류와 무관하게 가까운 쪽에 항상 반대 종류의 전기가 유도되므로 인력이 작용해 끌려옵니다."
+    }
+  ];
+
+  function checkConceptCheckpoint() {
+    let allCorrect = true;
+    for (let i = 0; i < conceptChecks.length; i++) {
+      const sel = document.querySelector(`input[name="cc_${i}"]:checked`);
+      const fb = document.getElementById(`ccfb_${i}`);
+      if (!sel) {
+        alert(`개념 확인 ${i + 1}번 문항을 선택해 주세요!`);
+        return;
+      }
+      if (Number(sel.value) === conceptChecks[i].ans) {
+        fb.className = "feedback-msg ok";
+        fb.textContent = "정답입니다! " + conceptChecks[i].exp;
+      } else {
+        allCorrect = false;
+        fb.className = "feedback-msg no";
+        fb.textContent = "오답입니다. 위의 전하 분포 그림과 일반화 정리를 다시 확인해 보세요!";
+      }
+    }
+    const status = document.getElementById("conceptCheckStatus");
+    if (allCorrect) {
+      status.style.color = "#16a34a";
+      status.textContent = "✅ 개념 확인 완료! 이제 3단계 가상실험으로 이동할 수 있습니다.";
+      document.getElementById("next-2").disabled = false;
+    } else {
+      status.style.color = "#dc2626";
+      status.textContent = "❌ 모든 문항을 맞혀야 다음 단계로 넘어갈 수 있습니다.";
+    }
+  }
+
+  // 3단계: 가상실험
+  // 알루미늄 깡통과 똑같은 방향(앞뒤 방향, 바닥과 수평)으로 공중에 띄워 든 막대가
+  // 전하가 잘 보이도록 살짝만 비스듬한 각도로 깡통의 옆면을 향해 다가가는 구도
+  const canvas = document.getElementById("labCanvas");
+  const ctx = canvas.getContext("2d");
+
+  let labState = {
+    rodType: "minus", // "minus" | "plus"
+    rodCharged: false,
+    rodX: 205,        // 공중에 띄운 막대 중심 X
+    rodY: 225,        // 바닥(y=315) 위 공중에 수평으로 띄운 높이 Y (깡통 중심 높이와 비슷)
+    canBaseX: 545,
+    canX: 545,
+    canRadius: 68,
+    canAngle: 0,
+    dragging: false,
+    dragOffsetX: 0,
+    rubAnim: 0,
+    animTick: 0,
+    missions: { m1: false, m2: false, m3: false, m4: false }
+  };
+
+  // 살짝 비스듬히 눕혀진 수평 막대의 가장 오른쪽 옆면 X좌표
+  function getRodNearSideX(centerX) {
+    return centerX + 52;
+  }
+
+  function startLabAnimationLoop() {
+    function loop() {
+      labState.animTick += 0.08;
+      if (document.getElementById("step-3").classList.contains("active")) {
+        drawLab();
+      }
+      requestAnimationFrame(loop);
+    }
+    requestAnimationFrame(loop);
+  }
+
+  function setRodType(type) {
+    labState.rodType = type;
+    labState.rodCharged = false;
+    labState.rodX = 205;
+    labState.canX = labState.canBaseX;
+    labState.canAngle = 0;
+    labState.rubAnim = 0;
+
+    document.getElementById("btnTypeMinus").classList.toggle("active", type === "minus");
+    document.getElementById("btnTypePlus").classList.toggle("active", type === "plus");
+    const btnRub = document.getElementById("btnRub");
+    btnRub.disabled = false;
+    btnRub.textContent = type === "minus" ? "🧤 털가죽으로 마찰 ((-)대전)" : "🧣 명주헝겊으로 마찰 ((+)대전)";
+    document.getElementById("labStatusBanner").textContent =
+      type === "minus"
+        ? "바닥과 수평으로 띄워 든 플라스틱 막대(대전 전)가 준비되었습니다. 마찰시킨 뒤 막대의 옆면을 깡통에 가까이 가져가 보세요!"
+        : "바닥과 수평으로 띄워 든 유리 막대(대전 전)가 준비되었습니다. 명주헝겊으로 마찰시킨 뒤 막대의 옆면을 깡통에 가까이 가져가 보세요!";
+    drawLab();
+  }
+
+  function rubRod() {
+    if (labState.rodCharged) return;
+    labState.rubAnim = 36;
+    const interval = setInterval(() => {
+      labState.rubAnim--;
+      drawLab();
+      if (labState.rubAnim <= 0) {
+        clearInterval(interval);
+        labState.rodCharged = true;
+        const btnRub = document.getElementById("btnRub");
+        btnRub.disabled = true;
+        if (labState.rodType === "minus") {
+          btnRub.textContent = "✅ (-)전기로 대전 완료";
+          document.getElementById("labStatusBanner").textContent =
+            "플라스틱 막대가 (-)전기로 대전되었습니다! 공중에 띄운 막대를 드래그해 옆면을 둥근 알루미늄 깡통에 가까이 가져가 보세요.";
+        } else {
+          btnRub.textContent = "✅ (+)전기로 대전 완료";
+          document.getElementById("labStatusBanner").textContent =
+            "유리 막대가 (+)전기로 대전되었습니다! 공중에 띄운 막대를 드래그해 옆면을 둥근 알루미늄 깡통에 가까이 가져가 보세요.";
+        }
+        drawLab();
+      }
+    }, 24);
+  }
+
+  function resetLab() {
+    setRodType(labState.rodType);
+  }
+
+  function updateMissions() {
+    if (labState.missions.m1) {
+      const el = document.getElementById("m1");
+      el.classList.add("done");
+      el.textContent = "✅ 미션 1: 대전되지 않은 막대 접근 확인 완료";
+    }
+    if (labState.missions.m2) {
+      const el = document.getElementById("m2");
+      el.classList.add("done");
+      el.textContent = "✅ 미션 2: (-)대전체 접근 시 전자 이동 & 깡통 굴림 완료";
+    }
+    if (labState.missions.m3) {
+      const el = document.getElementById("m3");
+      el.classList.add("done");
+      el.textContent = "✅ 미션 3: (+)대전체 접근 시 전자 이동 & 깡통 굴림 완료";
+    }
+    if (labState.missions.m4) {
+      const el = document.getElementById("m4");
+      el.classList.add("done");
+      el.textContent = "✅ 미션 4: 가상실험 확인 문제 정답 완료";
+    }
+
+    if (labState.missions.m1 && labState.missions.m2 && labState.missions.m3 && labState.missions.m4) {
+      document.getElementById("next-3").disabled = false;
+    }
+  }
+
+  // 가상실험 확인 문제
+  const labChecks = [
+    {
+      q: "실험 확인 1. 가상실험에서 (-)대전체와 (+)대전체를 각각 알루미늄 깡통에 가까이 가져갔을 때 깡통의 움직임은 어떠했나요?",
+      choices: [
+        "(-)대전체를 가져갈 때만 끌려오고, (+)대전체를 가져갈 때는 밀려난다.",
+        "(-)대전체와 (+)대전체 어느 쪽을 가까이 가져가도 알루미늄 깡통이 막대 쪽으로 굴러온다.",
+        "두 대전체 모두 알루미늄 깡통을 밀어낸다."
+      ],
+      ans: 1,
+      exp: "대전체의 종류와 관계없이 항상 대전체와 가까운 쪽에 반대 종류의 전기가 유도되므로 깡통은 대전체 쪽으로 굴러옵니다."
+    },
+    {
+      q: "실험 확인 2. (+)대전체를 알루미늄 깡통 왼쪽에 가까이 가져갔을 때, 깡통 내부 전자의 이동 방향은?",
+      choices: [
+        "대전체와 가까운 쪽(왼쪽)으로 이동한다.",
+        "대전체에서 먼 쪽(오른쪽)으로 이동한다.",
+        "전자는 이동하지 않고 원자핵이 왼쪽으로 이동한다."
+      ],
+      ans: 0,
+      exp: "(+)대전체가 (-)전자를 끌어당기므로(인력) 전자가 대전체와 가까운 왼쪽으로 이동합니다."
+    }
+  ];
+
+  function checkLabCheckpoint() {
+    let allCorrect = true;
+    for (let i = 0; i < labChecks.length; i++) {
+      const sel = document.querySelector(`input[name="lc_${i}"]:checked`);
+      const fb = document.getElementById(`lcfb_${i}`);
+      if (!sel) {
+        alert(`가상실험 확인 ${i + 1}번 문항을 선택해 주세요!`);
+        return;
+      }
+      if (Number(sel.value) === labChecks[i].ans) {
+        fb.className = "feedback-msg ok";
+        fb.textContent = "정답입니다! " + labChecks[i].exp;
+      } else {
+        allCorrect = false;
+        fb.className = "feedback-msg no";
+        fb.textContent = "오답입니다. 위 가상실험에서 전하 분포 보기를 켜고 다시 관찰해 보세요!";
+      }
+    }
+    const status = document.getElementById("labCheckStatus");
+    if (allCorrect) {
+      labState.missions.m4 = true;
+      updateMissions();
+      if (labState.missions.m1 && labState.missions.m2 && labState.missions.m3) {
+        status.style.color = "#16a34a";
+        status.textContent = "✅ 모든 실험 미션과 확인 문제를 완료했습니다! 4단계 형성평가로 이동하세요.";
+      } else {
+        status.style.color = "#d97706";
+        status.textContent = "⚠️ 확인 문제는 모두 맞혔습니다! 위 미션 1~3(대전 전 / (-)대전 / (+)대전 실험)도 모두 수행하면 다음 단계가 열립니다.";
+      }
+    } else {
+      status.style.color = "#dc2626";
+      status.textContent = "❌ 모든 확인 문제를 맞혀야 다음 단계로 넘어갈 수 있습니다.";
+    }
+  }
+
+  // 포인터 드래그 이벤트
+  function getPointerPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    return {
+      x: (e.clientX - rect.left) * scaleX,
+      y: (e.clientY - rect.top) * scaleY
+    };
+  }
+
+  canvas.addEventListener("pointerdown", e => {
+    const pos = getPointerPos(e);
+    if (
+      pos.x >= labState.rodX - 110 &&
+      pos.x <= labState.rodX + 75 &&
+      pos.y >= labState.rodY - 60 &&
+      pos.y <= labState.rodY + 55
+    ) {
+      labState.dragging = true;
+      labState.dragOffsetX = pos.x - labState.rodX;
+      canvas.setPointerCapture(e.pointerId);
+    }
+  });
+
+  canvas.addEventListener("pointermove", e => {
+    if (!labState.dragging) return;
+    const pos = getPointerPos(e);
+    let nextX = pos.x - labState.dragOffsetX;
+    const maxAllowedX = labState.canX - labState.canRadius - 66;
+    nextX = Math.max(125, Math.min(maxAllowedX, nextX));
+    labState.rodX = nextX;
+
+    const gap = (labState.canX - labState.canRadius) - getRodNearSideX(labState.rodX);
+    if (gap < 115) {
+      if (!labState.rodCharged) {
+        labState.missions.m1 = true;
+        updateMissions();
+        document.getElementById("labStatusBanner").textContent =
+          "대전되지 않은 막대의 옆면을 가까이 가져갔을 때는 깡통 내부 전자가 이동하지 않으며 깡통도 굴러오지 않습니다.";
+      } else {
+        const pull = Math.min(130, (115 - gap) * 1.25);
+        const prevCanX = labState.canX;
+        labState.canX = Math.max(getRodNearSideX(labState.rodX) + labState.canRadius + 18, labState.canBaseX - pull);
+        const dx = labState.canX - prevCanX;
+        labState.canAngle += dx / labState.canRadius;
+
+        if (labState.rodType === "minus") {
+          labState.missions.m2 = true;
+          document.getElementById("labStatusBanner").textContent =
+            "(-)대전체 접근: 깡통 속 (-)전자가 반대편 오른쪽 끝까지 크게 이동하여 왼쪽이 (+)전기를 띠어 깡통이 굴러옵니다!";
+        } else {
+          labState.missions.m3 = true;
+          document.getElementById("labStatusBanner").textContent =
+            "(+)대전체 접근: 깡통 속 (-)전자가 가까운 왼쪽 끝까지 크게 끌려와 왼쪽이 (-)전기를 띠어 깡통이 굴러옵니다!";
+        }
+        updateMissions();
+      }
+    } else if (labState.rodCharged && gap >= 115) {
+      const prevCanX = labState.canX;
+      labState.canX += (labState.canBaseX - labState.canX) * 0.18;
+      labState.canAngle += (labState.canX - prevCanX) / labState.canRadius;
+    }
+    drawLab();
+  });
+
+  canvas.addEventListener("pointerup", () => {
+    labState.dragging = false;
+  });
+
+  function drawLab() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // 1. 배경 및 책상 표면
+    const wallGrad = ctx.createLinearGradient(0, 0, 0, 315);
+    wallGrad.addColorStop(0, "#f8fafc");
+    wallGrad.addColorStop(1, "#e2e8f0");
+    ctx.fillStyle = wallGrad;
+    ctx.fillRect(0, 0, canvas.width, 315);
+
+    const deskGrad = ctx.createLinearGradient(0, 315, 0, 430);
+    deskGrad.addColorStop(0, "#d6b892");
+    deskGrad.addColorStop(1, "#b8926a");
+    ctx.fillStyle = deskGrad;
+    ctx.fillRect(0, 315, canvas.width, 115);
+    ctx.strokeStyle = "#9a734c";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(0, 315);
+    ctx.lineTo(canvas.width, 315);
+    ctx.stroke();
+
+    ctx.fillStyle = "#334155";
+    ctx.font = "bold 14.5px sans-serif";
+    ctx.textAlign = "left";
+    ctx.fillText("◀ 바닥과 수평으로 띄워 든 막대를 좌우로 드래그해 막대의 옆면을 알루미늄 깡통에 가까이 가져가 보세요", 22, 28);
+
+    const showCharges = document.getElementById("chkCharges").checked;
+    const gap = (labState.canX - labState.canRadius) - getRodNearSideX(labState.rodX);
+    const inductionFactor = labState.rodCharged ? Math.max(0, Math.min(1, (165 - gap) / 120)) : 0;
+
+    // 2. 바닥에 누워 있는 알루미늄 깡통 (둥근 단면이 정면에서 보이고 옆면이 깊이 방향으로 누운 형태)
+    const cx = labState.canX;
+    const r = labState.canRadius;
+    const cy = 315 - r;
+
+    // 깡통 그림자
+    ctx.fillStyle = "rgba(0,0,0,0.22)";
+    ctx.beginPath();
+    ctx.ellipse(cx - 10, 317, r * 0.95, 8, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 깡통의 뒤쪽 원기둥 몸통(살짝 비스듬히 보이는 깊이감 표현으로 깡통이 누워 있는 방향을 명확히 표시)
+    const canBackOffsetX = -32;
+    const canBackOffsetY = -16;
+    ctx.fillStyle = "#94a3b8";
+    ctx.beginPath();
+    ctx.arc(cx + canBackOffsetX, cy + canBackOffsetY, r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "#475569";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // 깡통 옆면 연결부
+    ctx.fillStyle = "#cbd5e1";
+    ctx.beginPath();
+    ctx.moveTo(cx + canBackOffsetX - r * 0.65, cy + canBackOffsetY - r * 0.76);
+    ctx.lineTo(cx - r * 0.65, cy - r * 0.76);
+    ctx.lineTo(cx + r * 0.65, cy + r * 0.76);
+    ctx.lineTo(cx + canBackOffsetX + r * 0.65, cy + canBackOffsetY + r * 0.76);
+    ctx.closePath();
+    ctx.fill();
+
+    // 깡통 앞면 원형 단면 (회전하면서 굴러감)
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(labState.canAngle);
+
+    const rimGrad = ctx.createLinearGradient(-r, -r, r, r);
+    rimGrad.addColorStop(0, "#f1f5f9");
+    rimGrad.addColorStop(0.5, "#94a3b8");
+    rimGrad.addColorStop(1, "#cbd5e1");
+    ctx.fillStyle = rimGrad;
+    ctx.beginPath();
+    ctx.arc(0, 0, r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "#475569";
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+
+    ctx.fillStyle = "#dbeafe";
+    ctx.beginPath();
+    ctx.arc(0, 0, r - 8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "#3b82f6";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    ctx.strokeStyle = "#93c5fd";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(0, 0, r - 20, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.strokeStyle = "rgba(37, 99, 235, 0.25)";
+    ctx.lineWidth = 2;
+    for (let k = 0; k < 4; k++) {
+      const a = (k * Math.PI) / 2;
+      ctx.beginPath();
+      ctx.moveTo(Math.cos(a) * (r - 20), Math.sin(a) * (r - 20));
+      ctx.lineTo(Math.cos(a) * (r - 8), Math.sin(a) * (r - 8));
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    if (showCharges && inductionFactor > 0.2) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(cx, cy, r - 8, 0, Math.PI * 2);
+      ctx.clip();
+
+      const leftColor = labState.rodType === "minus"
+        ? `rgba(239, 68, 68, ${0.22 * inductionFactor})`
+        : `rgba(37, 99, 235, ${0.22 * inductionFactor})`;
+      const rightColor = labState.rodType === "minus"
+        ? `rgba(37, 99, 235, ${0.22 * inductionFactor})`
+        : `rgba(239, 68, 68, ${0.22 * inductionFactor})`;
+
+      ctx.fillStyle = leftColor;
+      ctx.fillRect(cx - r, cy - r, r, r * 2);
+      ctx.fillStyle = rightColor;
+      ctx.fillRect(cx, cy - r, r, r * 2);
+
+      ctx.strokeStyle = "rgba(71, 85, 105, 0.45)";
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - r);
+      ctx.lineTo(cx, cy + r);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    ctx.fillStyle = "#0f172a";
+    ctx.font = "bold 14px sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("알루미늄 깡통", cx - 10, cy - r - 48);
+
+    // 깡통 내부 전하 분포 (선 제거 + 긴 거리 이동)
+    if (showCharges) {
+      const nuclei = [
+        { x: -34, y: -26 }, { x: 34, y: -26 },
+        { x: -36, y: 24 },  { x: 36, y: 24 },
+        { x: -12, y: 0 },   { x: 14, y: 0 }
+      ];
+
+      nuclei.forEach(pt => {
+        drawChargeCircle(cx + pt.x, cy + pt.y, "+", "#ef4444");
+      });
+
+      const targetSide = labState.rodType === "minus" ? 1 : -1;
+      const extremeTargets = [
+        { x: targetSide * 38, y: -32 },
+        { x: targetSide * 48, y: -16 },
+        { x: targetSide * 50, y: 0 },
+        { x: targetSide * 48, y: 16 },
+        { x: targetSide * 38, y: 32 },
+        { x: targetSide * 32, y: 0 }
+      ];
+
+      nuclei.forEach((pt, idx) => {
+        const neutralX = cx + pt.x + 8;
+        const neutralY = cy + pt.y + 6;
+        const targetX = cx + extremeTargets[idx].x;
+        const targetY = cy + extremeTargets[idx].y;
+
+        const jitterX = Math.cos(labState.animTick * 1.5 + idx * 1.4) * 1.5;
+        const jitterY = Math.sin(labState.animTick * 1.7 + idx * 1.9) * 1.5;
+
+        const ex = neutralX + (targetX - neutralX) * inductionFactor + jitterX;
+        const ey = neutralY + (targetY - neutralY) * inductionFactor + jitterY;
+
+        drawChargeCircle(ex, ey, "-", "#2563eb");
+      });
+
+      if (inductionFactor > 0.3) {
+        const nearIsPlus = labState.rodType === "minus";
+        drawChargeTag(
+          cx - 64,
+          cy - r - 24,
+          nearIsPlus ? "가까운 쪽: (+)전기" : "가까운 쪽: (-)전기",
+          nearIsPlus ? "#dc2626" : "#1d4ed8",
+          nearIsPlus ? "#fee2e2" : "#dbeafe"
+        );
+        drawChargeTag(
+          cx + 54,
+          cy - r - 24,
+          nearIsPlus ? "먼 쪽: (-)전기" : "먼 쪽: (+)전기",
+          nearIsPlus ? "#1d4ed8" : "#dc2626",
+          nearIsPlus ? "#dbeafe" : "#fee2e2"
+        );
+      }
+    }
+
+    // 3. 바닥면과 수평으로 공중에 띄워 든 막대
+    // 깡통이 누워 있는 방향(canBackOffsetX = -32, canBackOffsetY = -16)과 완전히 평행한 축을 따라
+    // 바닥 위 공중(rodY = 232)에 수평으로 띄워져 있으며, 전하가 잘 보이도록 살짝만 비스듬하게 투시 표현!
+    const rx = labState.rodX;
+    const ry = labState.rodY;
+    const cylR = 16;
+
+    // 깡통 축과 나란한 수평 막대의 뒤쪽 끝과 앞쪽 끝
+    const backX = rx - 82;
+    const backY = ry - 36;
+    const frontX = rx + 36;
+    const frontY = ry + 18;
+
+    // 공중에 떠 있음을 보여주는 바닥 위 투영 그림자 (책상 y=317)
+    ctx.fillStyle = "rgba(0,0,0,0.12)";
+    ctx.beginPath();
+    ctx.moveTo(backX - 10, 317);
+    ctx.lineTo(frontX - 10, 323);
+    ctx.lineTo(frontX + 18, 323);
+    ctx.lineTo(backX + 18, 317);
+    ctx.closePath();
+    ctx.fill();
+
+    // 원기둥 몸통 그라데이션 (바닥과 수평으로 공중에 띄워진 긴 옆면)
+    const bodyGrad = ctx.createLinearGradient(backX, backY - cylR, frontX, frontY + cylR);
+    if (labState.rodType === "minus") {
+      bodyGrad.addColorStop(0, "#475569");
+      bodyGrad.addColorStop(0.5, "#64748b");
+      bodyGrad.addColorStop(1, "#1e293b");
+    } else {
+      bodyGrad.addColorStop(0, "#f87171");
+      bodyGrad.addColorStop(0.5, "#ef4444");
+      bodyGrad.addColorStop(1, "#991b1b");
+    }
+
+    const dx = frontX - backX;
+    const dy = frontY - backY;
+    const len = Math.hypot(dx, dy);
+    const nx = (-dy / len) * cylR;
+    const ny = (dx / len) * cylR;
+
+    ctx.fillStyle = bodyGrad;
+    ctx.beginPath();
+    ctx.moveTo(backX + nx, backY + ny);
+    ctx.lineTo(frontX + nx, frontY + ny);
+    ctx.arc(frontX, frontY, cylR, Math.atan2(ny, nx), Math.atan2(-ny, -nx), false);
+    ctx.lineTo(backX - nx, backY - ny);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = labState.rodType === "minus" ? "#0f172a" : "#7f1d1d";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // 앞쪽 원형 단면 (깡통의 둥근 앞면과 같은 방향을 바라봄)
+    ctx.fillStyle = labState.rodType === "minus" ? "#cbd5e1" : "#fecaca";
+    ctx.beginPath();
+    ctx.arc(frontX, frontY, cylR, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = labState.rodType === "minus" ? "#0f172a" : "#7f1d1d";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // 막대의 옆면(오른쪽 깡통을 향한 면)을 따라 전하 표시
+    if (showCharges) {
+      const ratios = [0.14, 0.34, 0.54, 0.74, 0.92];
+      if (!labState.rodCharged) {
+        [0.2, 0.5, 0.8].forEach(t => {
+          const px = backX + dx * t;
+          const py = backY + dy * t;
+          drawChargeCircle(px - 6, py - 3, "+", "#ef4444");
+          drawChargeCircle(px + 8, py + 4, "-", "#2563eb");
+        });
+      } else if (labState.rodType === "minus") {
+        ratios.forEach(t => {
+          const px = backX + dx * t + nx * 0.2;
+          const py = backY + dy * t + ny * 0.2;
+          drawChargeCircle(px, py, "-", "#2563eb");
+        });
+      } else {
+        ratios.forEach(t => {
+          const px = backX + dx * t + nx * 0.2;
+          const py = backY + dy * t + ny * 0.2;
+          drawChargeCircle(px, py, "+", "#ef4444");
+        });
+      }
+    }
+
+    // 4. 공중에 띄운 막대 옆면을 문지르는 마찰 애니메이션
+    if (labState.rubAnim > 0) {
+      const t = 0.5 + Math.sin(labState.rubAnim * 0.7) * 0.35;
+      const rubX = backX + dx * t;
+      const rubY = backY + dy * t - 12;
+      ctx.fillStyle = labState.rodType === "minus" ? "#92400e" : "#7e22ce";
+      ctx.beginPath();
+      ctx.roundRect(rubX - 44, rubY - 20, 88, 38, 14);
+      ctx.fill();
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 11.5px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(labState.rodType === "minus" ? "털가죽 마찰!" : "명주헝겊 마찰!", rubX, rubY + 3);
+    }
+
+    // 막대 이름표
+    ctx.fillStyle = "#0f172a";
+    ctx.font = "bold 13.5px sans-serif";
+    ctx.textAlign = "center";
+    const rodLabel = labState.rodType === "minus"
+      ? (labState.rodCharged ? "(-)대전 플라스틱 막대" : "대전 전 플라스틱 막대")
+      : (labState.rodCharged ? "(+)대전 유리 막대" : "대전 전 유리 막대");
+    ctx.fillText(rodLabel, rx - 18, backY - 28);
+
+    // 5. 인력 화살표
+    if (inductionFactor > 0.3) {
+      const midX = (getRodNearSideX(rx) + cx - r) / 2;
+      ctx.fillStyle = "#16a34a";
+      ctx.font = "bold 13.5px sans-serif";
+      ctx.fillText("◀ 인력", midX, cy - 8);
+    }
+
+    ctx.textAlign = "left";
+  }
+
+  function drawChargeTag(x, y, text, textColor, bgColor) {
+    ctx.font = "bold 12px sans-serif";
+    const w = ctx.measureText(text).width + 14;
+    const h = 22;
+    ctx.fillStyle = bgColor;
+    ctx.beginPath();
+    ctx.roundRect(x - w / 2, y - h / 2, w, h, 6);
+    ctx.fill();
+    ctx.strokeStyle = textColor;
+    ctx.lineWidth = 1.3;
+    ctx.stroke();
+
+    ctx.fillStyle = textColor;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(text, x, y + 0.5);
+    ctx.textBaseline = "alphabetic";
+  }
+
+  function drawChargeCircle(x, y, symbol, color) {
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(x, y, 7.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 11.5px sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(symbol, x, y + 0.5);
+    ctx.textBaseline = "alphabetic";
+  }
+
+  // 4단계: 형성평가 및 추가 연습문제
+  const mainQuizzes = [
+    {
+      q: "1. 대전되지 않은 금속 물체에 대전체를 가까이 가져갈 때, 대전체와 가까운 쪽은 대전체와 다른 종류의 전기를 띠고 먼 쪽은 같은 종류의 전기를 띠는 현상을 무엇이라고 하는가?",
+      choices: ["마찰 전기", "정전기 유도", "전기 저항", "전류 자기 작용"],
+      ans: 1,
+      exp: "대전되지 않은 금속 물체에 대전체를 가까이 가져갈 때 전하가 유도되는 현상을 '정전기 유도'라고 합니다."
+    },
+    {
+      q: "2. 대전되지 않은 알루미늄 깡통에 (-)전기로 대전된 플라스틱 막대를 가까이 가져갔을 때 일어나는 현상으로 옳은 것은?",
+      choices: [
+        "알루미늄 깡통 속 원자핵이 막대 쪽으로 이동한다.",
+        "알루미늄 깡통 속 전자가 막대와 가까운 쪽으로 이동한다.",
+        "알루미늄 깡통에서 막대와 가까운 쪽은 상대적으로 (+)전하량이 많아져 (+)전기를 띤다.",
+        "알루미늄 깡통이 전기력을 받아 막대에서 멀어지는 쪽으로 굴러간다."
+      ],
+      ans: 2,
+      exp: "(-)대전체를 가까이 가져가면 깡통 속 (-)전자가 척력을 받아 막대에서 먼 쪽으로 이동하므로, 가까운 쪽은 (+)전기를 띠고 깡통은 막대 쪽으로 굴러옵니다."
+    },
+    {
+      q: "3. 정전기 유도 현상이 일어날 때 금속 내부에서 실제로 이동하는 입자는 무엇인가?",
+      choices: ["원자핵", "전자", "중성자", "분자 전체"],
+      ans: 1,
+      exp: "(+)전하를 띤 원자핵은 제자리에 고정되어 있고, (-)전하를 띤 자유전자가 전기력을 받아 이동합니다."
+    },
+    {
+      q: "4. [교과서 스스로 확인하기] 대전되지 않은 알루미늄 깡통에 (+)대전체를 가까이 가져갈 때 깡통의 움직임과 전하 분포로 옳은 것은?",
+      choices: [
+        "전자가 (+)대전체 쪽으로 끌려 오고, 깡통은 (+)대전체 쪽으로 움직인다.",
+        "전자가 (+)대전체에서 먼 쪽으로 이동하고, 깡통은 밀려난다.",
+        "원자핵이 (+)대전체에서 멀어지고, 깡통은 움직이지 않는다.",
+        "가까운 쪽이 (+)전기를 띠어 서로 밀어낸다."
+      ],
+      ans: 0,
+      exp: "(+)대전체를 가까이 가져가면 깡통 속 전자가 인력을 받아 대전체 쪽으로 이동하여 가까운 쪽이 (-)전기를 띠게 되므로, 역시 대전체 쪽으로 굴러옵니다."
+    }
+  ];
+
+  const extraQuizzes = [
+    {
+      q: "추가 1. 아래 그림처럼 책상 위에 누워 있는 가벼운 알루미늄박 인형 위에 대전된 풍선을 가까이 가져가면 알루미늄박 인형이 벌떡 일어나는 까닭은?",
+      hasFoilDemo: true,
+      choices: [
+        "풍선과 알루미늄박 사이에 척력이 작용하기 때문이다.",
+        "알루미늄박 내부의 전자가 이동해 풍선과 가까운 쪽이 풍선과 다른 종류의 전기를 띠어 인력이 작용하기 때문이다.",
+        "알루미늄박이 풍선과 직접 마찰하여 같은 전기를 띠기 때문이다."
+      ],
+      ans: 1,
+      exp: "정전기 유도에 의해 풍선과 가까운 알루미늄박 위쪽에 반대 전기가 유도되어 서로 끌어당기는 전기력(인력)이 작용하므로 벌떡 일어납니다."
+    },
+    {
+      q: "추가 2. 금속 깡통에 (-)대전체를 가까이 가져갔을 때, 깡통 전체의 (+)전하 총량과 (-)전하 총량을 비교하면?",
+      choices: [
+        "(+)전하가 더 많아진다.",
+        "(-)전하가 더 많아진다.",
+        "전자가 내부에서 이동했을 뿐이므로 (+)전하와 (-)전하의 총량은 여전히 같다."
+      ],
+      ans: 2,
+      exp: "막대가 깡통에 닿지 않았으므로 전자가 외부로 빠져나가거나 들어오지 않아 깡통 전체의 전하 총량은 변하지 않습니다."
+    }
+  ];
+
+  let foilBalloonNear = false;
+  let foilLiftProgress = 0;
+  let foilAnimFrame = null;
+
+  function toggleFoilDemo() {
+    foilBalloonNear = !foilBalloonNear;
+    const btn = document.getElementById("btnFoilDemo");
+    if (btn) {
+      btn.textContent = foilBalloonNear ? "🎈 풍선 멀리 치우기" : "🎈 (-)대전된 풍선 가까이 가져가기";
+    }
+    if (foilAnimFrame) cancelAnimationFrame(foilAnimFrame);
+    function stepFoil() {
+      const target = foilBalloonNear ? 1 : 0;
+      foilLiftProgress += (target - foilLiftProgress) * 0.12;
+      drawFoilDemo();
+      if (Math.abs(target - foilLiftProgress) > 0.01) {
+        foilAnimFrame = requestAnimationFrame(stepFoil);
+      } else {
+        foilLiftProgress = target;
+        drawFoilDemo();
+      }
+    }
+    stepFoil();
+  }
+
+  function drawFoilDemo() {
+    const fc = document.getElementById("foilCanvas");
+    if (!fc) return;
+    const fctx = fc.getContext("2d");
+    fctx.clearRect(0, 0, fc.width, fc.height);
+
+    fctx.fillStyle = "#f8fafc";
+    fctx.fillRect(0, 0, fc.width, 185);
+    fctx.fillStyle = "#d6b892";
+    fctx.fillRect(0, 185, fc.width, 45);
+    fctx.strokeStyle = "#9a734c";
+    fctx.lineWidth = 2;
+    fctx.beginPath();
+    fctx.moveTo(0, 185);
+    fctx.lineTo(fc.width, 185);
+    fctx.stroke();
+
+    const balloonY = 38 + foilLiftProgress * 28;
+    const balloonX = 270;
+    fctx.fillStyle = "#fde047";
+    fctx.beginPath();
+    fctx.ellipse(balloonX, balloonY, 68, 26, 0, 0, Math.PI * 2);
+    fctx.fill();
+    fctx.strokeStyle = "#ca8a04";
+    fctx.lineWidth = 2;
+    fctx.stroke();
+
+    fctx.fillStyle = "#713f12";
+    fctx.font = "bold 12px sans-serif";
+    fctx.textAlign = "center";
+    fctx.fillText("(-)대전된 풍선", balloonX, balloonY - 30);
+
+    [-40, -14, 14, 40].forEach(ox => {
+      fctx.fillStyle = "#2563eb";
+      fctx.beginPath();
+      fctx.arc(balloonX + ox, balloonY, 6.5, 0, Math.PI * 2);
+      fctx.fill();
+      fctx.fillStyle = "#fff";
+      fctx.font = "bold 11px sans-serif";
+      fctx.fillText("-", balloonX + ox, balloonY + 3.5);
+    });
+
+    const pivotX = 320;
+    const pivotY = 183;
+    const angle = foilLiftProgress * (Math.PI * 0.42);
+
+    fctx.save();
+    fctx.translate(pivotX, pivotY);
+    fctx.rotate(angle);
+
+    fctx.fillStyle = "#cbd5e1";
+    fctx.strokeStyle = "#475569";
+    fctx.lineWidth = 2;
+    fctx.beginPath();
+    fctx.roundRect(-95, -14, 95, 14, 6);
+    fctx.fill();
+    fctx.stroke();
+
+    fctx.beginPath();
+    fctx.arc(-104, -7, 11, 0, Math.PI * 2);
+    fctx.fill();
+    fctx.stroke();
+
+    [-98, -65, -30].forEach(px => {
+      fctx.fillStyle = "#ef4444";
+      fctx.beginPath();
+      fctx.arc(px, -7, 5, 0, Math.PI * 2);
+      fctx.fill();
+      fctx.fillStyle = "#fff";
+      fctx.font = "bold 9px sans-serif";
+      fctx.fillText("+", px, -4);
+    });
+
+    [-90, -58, -22].forEach((nx, i) => {
+      const targetEx = -12 - i * 11;
+      const ex = nx + (targetEx - nx) * foilLiftProgress;
+      fctx.fillStyle = "#2563eb";
+      fctx.beginPath();
+      fctx.arc(ex, -7, 5, 0, Math.PI * 2);
+      fctx.fill();
+      fctx.fillStyle = "#fff";
+      fctx.font = "bold 9px sans-serif";
+      fctx.fillText("-", ex, -4);
+    });
+
+    fctx.restore();
+
+    fctx.fillStyle = "#475569";
+    fctx.font = "bold 12px sans-serif";
+    fctx.textAlign = "left";
+    fctx.fillText(
+      foilBalloonNear
+        ? "알루미늄박 인형이 풍선 쪽으로 일어나는 모습을 관찰하고 아래 보기에서 까닭을 골라 보세요."
+        : "책상 위에 알루미늄박 인형이 누워 있습니다. 아래 버튼을 눌러 움직임을 관찰해 보세요.",
+      16,
+      212
+    );
+  }
+
+  function renderQuizBlock(containerId, list, prefix) {
+    document.getElementById(containerId).innerHTML = list.map((item, i) => `
+      <div class="quiz-item">
+        <div class="quiz-q">${item.q}</div>
+        ${item.hasFoilDemo ? `
+          <div class="foil-demo-box">
+            <canvas id="foilCanvas" width="520" height="230" style="max-width:100%; border-radius:8px; border:1px solid #cbd5e1; background:#fff;"></canvas>
+            <div style="margin-top:8px;">
+              <button type="button" class="btn btn-outline" id="btnFoilDemo" style="padding:7px 14px; font-size:0.86rem;" onclick="toggleFoilDemo()">
+                🎈 (-)대전된 풍선 가까이 가져가기
+              </button>
+            </div>
+          </div>
+        ` : ""}
+        <div class="quiz-choices">
+          ${item.choices.map((ch, ci) => `
+            <label><input type="radio" name="${prefix}_${i}" value="${ci}" /> ${ch}</label>
+          `).join("")}
+        </div>
+        <div class="feedback-msg" id="${prefix}fb_${i}"></div>
+      </div>
+    `).join("");
+  }
+
+  function initAllQuizzes() {
+    renderQuizBlock("conceptCheckContainer", conceptChecks, "cc");
+    renderQuizBlock("labCheckContainer", labChecks, "lc");
+    renderQuizBlock("quizContainer", mainQuizzes, "mq");
+    renderQuizBlock("extraQuizContainer", extraQuizzes, "eq");
+    drawFoilDemo();
+  }
+
+  function gradeMainQuiz() {
+    let correct = 0;
+    let wrongs = [];
+    for (let i = 0; i < mainQuizzes.length; i++) {
+      const sel = document.querySelector(`input[name="mq_${i}"]:checked`);
+      if (!sel) {
+        alert(`${i + 1}번 문항의 답을 선택해 주세요!`);
+        return;
+      }
+      const val = Number(sel.value);
+      const fb = document.getElementById(`mqfb_${i}`);
+      if (val === mainQuizzes[i].ans) {
+        correct++;
+        fb.className = "feedback-msg ok";
+        fb.textContent = "정답! " + mainQuizzes[i].exp;
+      } else {
+        wrongs.push(`${i + 1}번`);
+        fb.className = "feedback-msg no";
+        fb.textContent = "오답! " + mainQuizzes[i].exp;
+      }
+    }
+    quizScoreText = `${correct} / ${mainQuizzes.length} (${Math.round((correct / mainQuizzes.length) * 100)}점)`;
+    wrongListText = wrongs.length ? wrongs.join(", ") : "없음";
+    document.getElementById("quizResultBox").textContent = `채점 결과: ${quizScoreText} | 오답 문항: ${wrongListText}`;
+    document.getElementById("next-4").disabled = false;
+  }
+
+  function toggleExtraQuiz() {
+    const sec = document.getElementById("extraQuizSection");
+    sec.style.display = sec.style.display === "none" ? "block" : "none";
+    if (sec.style.display === "block") drawFoilDemo();
+  }
+
+  function gradeExtraQuiz() {
+    let correct = 0;
+    for (let i = 0; i < extraQuizzes.length; i++) {
+      const sel = document.querySelector(`input[name="eq_${i}"]:checked`);
+      if (!sel) { alert(`추가 ${i + 1}번 문항을 선택해 주세요.`); return; }
+      const fb = document.getElementById(`eqfb_${i}`);
+      if (Number(sel.value) === extraQuizzes[i].ans) {
+        correct++;
+        fb.className = "feedback-msg ok";
+        fb.textContent = "정답! " + extraQuizzes[i].exp;
+      } else {
+        fb.className = "feedback-msg no";
+        fb.textContent = "다시 확인해 보세요! " + extraQuizzes[i].exp;
+      }
+    }
+    document.getElementById("extraQuizResult").textContent = `추가 연습문제 결과: ${correct} / ${extraQuizzes.length}`;
+  }
+
+  // 5단계: 핵심정리 검사 및 제출
+  function checkSummary() {
+    const ans = {
+      b1: "다른",
+      b2: "정전기 유도",
+      b3: "전자",
+      b4: "먼",
+      b5: "(+)전기"
+    };
+    let allOk = true;
+    Object.keys(ans).forEach(k => {
+      const el = document.getElementById(k);
+      if (el.value === ans[k]) {
+        el.style.borderColor = "#16a34a";
+        el.style.background = "#dcfce7";
+      } else {
+        el.style.borderColor = "#dc2626";
+        el.style.background = "#fee2e2";
+        allOk = false;
+      }
+    });
+    const fb = document.getElementById("summaryFeedback");
+    if (allOk) {
+      summarySolved = true;
+      fb.style.color = "#16a34a";
+      fb.textContent = "모두 정답입니다! 이제 아래 제출 버튼을 눌러 주세요.";
+    } else {
+      summarySolved = false;
+      fb.style.color = "#dc2626";
+      fb.textContent = "빨간색으로 표시된 빈칸을 다시 선택해 보세요.";
+    }
+  }
+
+  async function submitToGoogleSheet() {
+    if (!summarySolved) {
+      checkSummary();
+      if (!summarySolved) {
+        alert("핵심정리 빈칸 5개를 모두 알맞게 완성한 뒤 제출해 주세요!");
+        return;
+      }
+    }
+    if (!SCRIPT_URL) {
+      document.getElementById("submitStatus").innerHTML =
+        `<span style="color:#d97706;">⚠️ 현재 SCRIPT_URL이 연결되지 않은 미리보기 상태입니다. 코드의 SCRIPT_URL에 앱스크립트 주소를 넣으면 구글 시트로 자동 저장됩니다.</span>`;
+      return;
+    }
+
+    const btn = document.getElementById("btnSubmitSheet");
+    btn.disabled = true;
+    btn.textContent = "⏳ 제출 중...";
+
+    const payload = {
+      ban: student.ban,
+      bunho: student.bunho,
+      score: quizScoreText,
+      summaryComplete: "완료",
+      labSummary: "미션 1~4 완료 ((-)·(+)대전체 정전기 유도 확인)",
+      wrongQuestions: wrongListText
+    };
+
+    try {
+      await fetch(SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      });
+      document.getElementById("tab-5").classList.add("done");
+      document.getElementById("submitStatus").innerHTML =
+        `<span style="color:#16a34a;">✅ ${student.ban}반 ${student.bunho}번 학생의 학습 결과가 성공적으로 제출되었습니다!</span>`;
+      btn.textContent = "✅ 제출 완료";
+    } catch (err) {
+      btn.disabled = false;
+      btn.textContent = "📤 구글 시트로 학습 결과 제출하기";
+      document.getElementById("submitStatus").innerHTML =
+        `<span style="color:#dc2626;">❌ 제출 중 오류가 발생했습니다. 인터넷 연결을 확인하고 다시 시도해 주세요.</span>`;
+    }
+  }
+
+  // 교사 대시보드 기능
+  function openTeacherModal() {
+    document.getElementById("teacherModal").classList.add("open");
+    if (isAdmin) {
+      document.getElementById("pinGate").style.display = "none";
+      document.getElementById("dashboardContent").style.display = "block";
+      fetchDashboardData();
+    }
+  }
+  function closeTeacherModal() {
+    document.getElementById("teacherModal").classList.remove("open");
+  }
+  function verifyPin() {
+    const val = document.getElementById("pinInput").value;
+    if (val === TEACHER_PIN) {
+      document.getElementById("pinGate").style.display = "none";
+      document.getElementById("dashboardContent").style.display = "block";
+      fetchDashboardData();
+    } else {
+      document.getElementById("pinError").textContent = "비밀번호가 일치하지 않습니다.";
+    }
+  }
+
+  async function fetchDashboardData() {
+    const tbody = document.getElementById("dashTableBody");
+    if (!SCRIPT_URL) {
+      tbody.innerHTML = `<tr><td colspan="7">SCRIPT_URL이 아직 설정되지 않았습니다.</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = `<tr><td colspan="7">구글 시트에서 데이터를 불러오는 중...</td></tr>`;
+    try {
+      const res = await fetch(SCRIPT_URL);
+      dashboardRows = await res.json();
+      renderDashboardTable();
+    } catch (e) {
+      tbody.innerHTML = `<tr><td colspan="7">데이터를 불러오지 못했습니다. 앱스크립트 배포 권한을 확인해 주세요.</td></tr>`;
+    }
+  }
+
+  function renderDashboardTable() {
+    const filter = document.getElementById("filterBan").value;
+    const tbody = document.getElementById("dashTableBody");
+
+    let filtered = dashboardRows.filter(r => filter === "ALL" || String(r.ban) === filter);
+    filtered.sort((a, b) => {
+      if (Number(a.ban) !== Number(b.ban)) return Number(a.ban) - Number(b.ban);
+      return Number(a.bunho) - Number(b.bunho);
+    });
+
+    document.getElementById("dashCountBadge").textContent = `제출 인원: ${filtered.length}명`;
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7">해당 반의 제출 내역이 없습니다.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(r => `
+      <tr>
+        <td>${r.ban}반</td>
+        <td>${r.bunho}번</td>
+        <td>${r.score}</td>
+        <td>${r.summaryComplete}</td>
+        <td>${r.labSummary}</td>
+        <td>${r.wrongQuestions}</td>
+        <td style="font-size:0.78rem; color:#64748b;">${r.timestamp}</td>
+      </tr>
+    `).join("");
+  }
+</script>
+</body>
+</html>
